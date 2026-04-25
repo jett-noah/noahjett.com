@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 import Snake from './Snake';
+import Aero from './Aero';
 
 function App() {
   const [history, setHistory] = useState([
@@ -8,6 +9,7 @@ function App() {
   ]);
   const [input, setInput] = useState('');
   const [showSnakeGame, setShowSnakeGame] = useState(false);
+  const [showAero, setShowAero] = useState(false);
   const historyEndRef = useRef(null);
 
   // Auto-scroll to the bottom when new history is added
@@ -27,10 +29,12 @@ function App() {
   education  - Academic background
   experience - Work and internship history
   skills     - Technical toolset
+  aero       - Launch AE Compressible Flow Calculator
+  snake      - Launch Snake Game
   clear      - Clear the terminal`;
           break;
         case 'about':
-          output = 'Noah Jett\nA Junior studying Aerospace Engineering at Iowa State University, with a minor in Non-Destructive Evaluation. Seeking to apply a strong background in CAD modeling, e[...]';
+          output = 'Noah Jett\nA Junior studying Aerospace Engineering at Iowa State University, with a minor in Non-Destructive Evaluation. Seeking to apply a strong background in CAD modeling, etc...';
           break;
         case 'education':
           output = `[Iowa State University] - Ames, IA
@@ -61,7 +65,63 @@ Programming: MATLAB, Python, Java, Git, GitLab, Agile/Scrum`;
           setShowSnakeGame(true);
           output = 'Launching snake...';
           break;
+        case 'aero':
+          setShowAero(true);
+          output = 'Launching Aerodynamics Engine...';
+          break;
         case '':
+          output = '';
+          break;
+        default:
+          output = `Command not found: ${cmd}. Type "help" for a list of commands.`;
+      }
+
+      setHistory([...history, { command: `visitor@noahjett.com:~$ ${input}`, output }]);
+      setInput('');
+    }
+  };
+
+  if (showSnakeGame) {
+    return <Snake onClose={() => setShowSnakeGame(false)} />;
+  }
+  
+  if (showAero) {
+    return <Aero onClose={() => setShowAero(false)} />;
+  }
+
+  return (
+    <div className="terminal-container">
+      <div className="terminal-header">
+        <span>guest@noahjett.com</span>
+        <span>v1.0.0</span>
+      </div>
+      
+      <div className="terminal-history">
+        {history.map((item, index) => (
+          <div key={index} className="history-item">
+            {item.command && <div className="command-line">{item.command}</div>}
+            {item.output && <div className="output-text">{item.output}</div>}
+          </div>
+        ))}
+        <div ref={historyEndRef} />
+      </div>
+
+      <div className="input-area">
+        <span className="prompt">visitor@noahjett.com:~$</span>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleCommand}
+          autoFocus
+          spellCheck="false"
+        />
+      </div>
+    </div>
+  );
+}
+
+export default App;        case '':
           output = '';
           break;
         default:
