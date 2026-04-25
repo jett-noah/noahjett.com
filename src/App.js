@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
+import Snake from './Snake';
 
 function App() {
   const [history, setHistory] = useState([
     { command: '', output: 'Welcome to noahjett.com. Type "help" to see available commands.' }
   ]);
   const [input, setInput] = useState('');
+  const [showSnakeGame, setShowSnakeGame] = useState(false);
   const historyEndRef = useRef(null);
 
   // Auto-scroll to the bottom when new history is added
@@ -28,7 +30,7 @@ function App() {
   clear      - Clear the terminal`;
           break;
         case 'about':
-          output = 'Noah Jett\nA Junior studying Aerospace Engineering at Iowa State University, with a minor in Non-Destructive Evaluation. Seeking to apply a strong background in CAD modeling, engineering principles, and process analysis to aerospace manufacturing technology.';
+          output = 'Noah Jett\nA Junior studying Aerospace Engineering at Iowa State University, with a minor in Non-Destructive Evaluation. Seeking to apply a strong background in CAD modeling, e[...]';
           break;
         case 'education':
           output = `[Iowa State University] - Ames, IA
@@ -55,6 +57,10 @@ Programming: MATLAB, Python, Java, Git, GitLab, Agile/Scrum`;
           setHistory([]);
           setInput('');
           return;
+        case 'snake':
+          setShowSnakeGame(true);
+          output = 'Launching SNAKE GAME... 🐍';
+          break;
         case '':
           output = '';
           break;
@@ -66,6 +72,10 @@ Programming: MATLAB, Python, Java, Git, GitLab, Agile/Scrum`;
       setInput('');
     }
   };
+
+  if (showSnakeGame) {
+    return <Snake onClose={() => setShowSnakeGame(false)} />;
+  }
 
   return (
     <div className="terminal-container">
