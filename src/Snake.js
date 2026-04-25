@@ -12,6 +12,7 @@ function Snake({ onClose }) {
     const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
     const [speed, setSpeed] = useState(100);
+    const [touchStart, setTouchStart] = useState(null);
 
     const generateFood = useCallback(() => {
         return {
@@ -74,6 +75,43 @@ function Snake({ onClose }) {
                 } else {
                     newSnake.pop();
                 }
+                const handleTouchStart = (e) => {
+        setTouchStart({
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY
+        });
+    };
+
+    const handleTouchEnd = (e) => {
+        if (!touchStart) return;
+
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
+
+        const dx = touchStart.x - touchEndX;
+        const dy = touchStart.y - touchEndY;
+        const absDx = Math.abs(dx);
+        const absDy = Math.abs(dy);
+
+        // Require a minimum swipe distance of 30 pixels to prevent accidental taps
+        if (Math.max(absDx, absDy) > 30) {
+            let newDir = { x: 0, y: 0 };
+            
+            if (absDx > absDy) {
+                // Horizontal swipe
+                newDir = { x: dx > 0 ? -1 : 1, y: 0 }; // dx > 0 means swiped left
+            } else {
+                // Vertical swipe
+                newDir = { x: 0, y: dy > 0 ? -1 : 1 }; // dy > 0 means swiped up
+            }
+
+            // Prevent the snake from reversing directly into itself
+            if (!(newDir.x === -direction.x && newDir.y === -direction.y)) {
+                setNextDirection(newDir);
+            }
+        }
+        setTouchStart(null); // Reset for the next swipe
+    };
                 return newSnake;
             });
         }, speed);
