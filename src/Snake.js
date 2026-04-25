@@ -75,7 +75,23 @@ function Snake({ onClose }) {
                 } else {
                     newSnake.pop();
                 }
-                const handleTouchStart = (e) => {
+                return newSnake;
+            });
+        }, speed);
+        return () => clearInterval(gameInterval);
+    }, [speed, gameOver, food, nextDirection, generateFood]);
+
+    const handleRetry = () => {
+        setSnake([{ x: 10, y: 10 }]);
+        setFood(generateFood());
+        setDirection({ x: 1, y: 0 });
+        setNextDirection({ x: 1, y: 0 });
+        setGameOver(false);
+        setScore(0);
+        setSpeed(100);
+    };
+
+    const handleTouchStart = (e) => {
         setTouchStart({
             x: e.touches[0].clientX,
             y: e.touches[0].clientY
@@ -112,24 +128,13 @@ function Snake({ onClose }) {
         }
         setTouchStart(null); // Reset for the next swipe
     };
-                return newSnake;
-            });
-        }, speed);
-        return () => clearInterval(gameInterval);
-    }, [speed, gameOver, food, nextDirection, generateFood]);
-
-    const handleRetry = () => {
-        setSnake([{ x: 10, y: 10 }]);
-        setFood(generateFood());
-        setDirection({ x: 1, y: 0 });
-        setNextDirection({ x: 1, y: 0 });
-        setGameOver(false);
-        setScore(0);
-        setSpeed(100);
-    };
 
     return (
-        <div className="snake-game-container">
+        <div 
+            className="snake-game-container" 
+            onTouchStart={handleTouchStart} 
+            onTouchEnd={handleTouchEnd}
+        >
             <div className="snake-header">
                 <div className="snake-title">SNAKE GAME</div>
                 <div className="snake-info">
@@ -152,7 +157,7 @@ function Snake({ onClose }) {
                 </svg>
             </div>
             <div className="snake-controls">
-                <div className="controls-text">Arrow Keys or WASD to move • ESC to exit</div>
+                <div className="controls-text">Arrow Keys, WASD, or Swipe to move • ESC to exit</div>
             </div>
             {gameOver && (
                 <div className="game-over-overlay">
