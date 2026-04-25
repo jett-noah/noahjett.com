@@ -93,7 +93,7 @@ function Snake({ onClose }) {
     return (
         <div className="snake-game-container">
             <div className="snake-header">
-                <div className="snake-title">🐍 SNAKE GAME 🐍</div>
+                <div className="snake-title">SNAKE GAME</div>
                 <div className="snake-info">
                     <div>Score: {score}</div>
                     <div>Speed: {101 - Math.floor(speed / 50)}</div>
