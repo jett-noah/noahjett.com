@@ -59,7 +59,7 @@ Programming: MATLAB, Python, Java, Git, GitLab, Agile/Scrum`;
           return;
         case 'snake':
           setShowSnakeGame(true);
-          output = 'Launching SNAKE GAME... 🐍';
+          output = 'Launching snake...';
           break;
         case '':
           output = '';
