@@ -209,7 +209,6 @@
 
 /* ==========================================
    SCIENTIFIC CALCULATOR HARDWARE STYLES
-   Inspired by Reference Imgs & Neon Hacker Aesthetic
    ========================================== */
 
 .calc-unit {
@@ -217,12 +216,11 @@
   flex-direction: column;
   width: 100%;
   padding: 10px;
-  background-color: #050505; /* physical case color */
+  background-color: #050505; 
   border-radius: 5px;
   box-sizing: border-box;
 }
 
-/* --- Display Screen (mimics ref image_0ec09d.png LED style) --- */
 .calc-screen {
   background-color: #000;
   border: 2px solid #00ff00;
@@ -235,13 +233,12 @@
   flex-direction: column;
   justify-content: space-between;
   box-sizing: border-box;
-  box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.5); /* Inner neon glow */
+  box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.5); 
   overflow: hidden;
 }
 
-/* Two-line history style from ref image_0eb9f5.png */
 .calc-display-history {
-  color: #666; /* dimmed history text */
+  color: #666; 
   font-size: 13px;
   font-family: 'Courier New', Courier, monospace;
   overflow: hidden;
@@ -260,47 +257,38 @@
 }
 
 .calc-display-result {
-  display: none; /* Logic is handled within calc-display-input now */
+  display: none; 
 }
 
-
-/* --- Keypad (Physical Grid) --- */
 .calc-keypad {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px; /* tight packing like real hardware */
+  gap: 6px; 
 }
 
-/* --- Base Button (Physical Key Style) --- */
 .calc-btn {
-  background-color: #111; /* dark physical key */
-  color: #888; /* default dimmed text */
+  background-color: #111; 
+  color: #888; 
   border: 1px solid #333;
   padding: 14px 5px;
   font-family: 'Courier New', Courier, monospace;
   font-size: 14px;
   cursor: pointer;
   border-radius: 3px;
-  position: relative; /* for glow effects */
+  position: relative; 
   box-sizing: border-box;
   transition: all 0.1s;
   
-  /* subtle gradient for physical dimension */
   background-image: linear-gradient(145deg, #181818, #0f0f0f);
   box-shadow: 2px 2px 5px #050505;
 }
 
-/* physical click effect */
 .calc-btn:active {
   background-image: linear-gradient(145deg, #0f0f0f, #181818);
   transform: translateY(1px);
   box-shadow: 1px 1px 2px #050505;
 }
 
-
-/* --- Functional Groups (Colors inspired by user aesthetic) --- */
-
-/* Standard Numbers and . (bright green text) */
 .calc-btn-num {
   color: #00ff00;
   text-shadow: 0 0 3px #00ff00;
@@ -312,11 +300,9 @@
   box-shadow: 0 0 5px #00ff00;
 }
 
-
-/* Scientific keys and () (dimmed text from references, green on user site) */
 .calc-btn-sci {
   color: #aaaaaa;
-  font-size: 13px; /* smaller functional keys like in ref image_0eb9f5.png */
+  font-size: 13px; 
 }
 
 .calc-btn-sci:hover {
@@ -324,8 +310,6 @@
   color: #fff;
 }
 
-
-/* Basic Arithmetic Operators (use the purple aesthetic) */
 .calc-btn-op {
   color: #ff00ff;
   font-size: 16px;
@@ -336,8 +320,6 @@
   box-shadow: 0 0 5px #ff00ff;
 }
 
-
-/* Action keys (C, DEL - distinct color, use purple) */
 .calc-btn-action {
   background-image: linear-gradient(145deg, rgba(30, 0, 30, 0.4), rgba(15, 0, 15, 0.4));
   color: #ff00ff;
@@ -349,14 +331,10 @@
   box-shadow: 0 0 5px #ff00ff;
 }
 
-
-/* The prominent Equals Key (mimics physical style from image_0ec09d.png) */
 .calc-btn-eq {
   color: #00ff00;
   font-size: 20px;
   font-weight: bold;
-  
-  /* reverse lighting/case like prominent buttons */
   background-color: #00ff00;
   color: #000;
   background-image: linear-gradient(145deg, rgba(0, 255, 0, 0.7), rgba(0, 150, 0, 0.7));
@@ -366,4 +344,21 @@
 .calc-btn-eq:hover {
   background-image: linear-gradient(145deg, rgba(100, 255, 100, 0.7), rgba(0, 255, 0, 0.7));
   box-shadow: 0 0 10px #00ff00;
+}
+
+/* ==========================================
+   DOG WIDGET STYLES
+   ========================================== */
+.dog-img {
+  max-width: 100%;
+  max-height: 220px;
+  border-radius: 3px;
+  border: 1px solid #00ff00;
+  object-fit: cover;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+
+.dog-img:hover {
+  opacity: 1;
 }
