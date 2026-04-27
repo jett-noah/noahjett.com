@@ -82,3 +82,41 @@
   color: #aaa;
   text-align: center;
 }
+
+/* --- YouTube Widget Specific Styles --- */
+.yt-content {
+  align-items: flex-start;
+}
+
+.video-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  text-align: left;
+}
+
+.video-list li {
+  margin-bottom: 15px;
+  border-bottom: 1px dashed #333;
+  padding-bottom: 10px;
+}
+
+.video-list li:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.video-list a {
+  color: #00ff00;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.4;
+  display: block;
+  transition: color 0.2s;
+}
+
+.video-list a:hover {
+  color: #fff;
+  text-shadow: 0 0 5px #00ff00;
+}
