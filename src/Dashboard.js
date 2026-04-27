@@ -24,7 +24,6 @@ const fetchFeed = async (rssUrl) => {
   return data.items || [];
 };
 
-// Filter function to remove likely Shorts from the RSS feed
 const filterShorts = (items) => {
   return items.filter(item => {
     const title = (item.title || '').toLowerCase();
@@ -62,6 +61,10 @@ export default function Dashboard({ onClose }) {
   const [weather, setWeather] = useState(null);
   const [alerts, setAlerts] = useState([]);
   const [weatherLoading, setWeatherLoading] = useState(true);
+
+  // Calculator States
+  const [calcInput, setCalcInput] = useState('');
+  const [calcResult, setCalcResult] = useState('');
 
   useEffect(() => {
     // --- 1. YOUTUBE FETCHING ---
@@ -121,6 +124,55 @@ export default function Dashboard({ onClose }) {
     fetchWeather();
   }, []);
 
+  // --- 3. CALCULATOR LOGIC ---
+  const handleCalcClick = (val) => {
+    if (val === 'C') {
+      setCalcInput('');
+      setCalcResult('');
+    } else if (val === 'DEL') {
+      setCalcInput(prev => prev.slice(0, -1));
+    } else if (val === '=') {
+      try {
+        let expr = calcInput;
+        // Translate scientific notation to native JS Math engine
+        expr = expr.replace(/sin\(/g, 'Math.sin(');
+        expr = expr.replace(/cos\(/g, 'Math.cos(');
+        expr = expr.replace(/tan\(/g, 'Math.tan(');
+        expr = expr.replace(/sqrt\(/g, 'Math.sqrt(');
+        expr = expr.replace(/log\(/g, 'Math.log10(');
+        expr = expr.replace(/ln\(/g, 'Math.log(');
+        expr = expr.replace(/pi/g, 'Math.PI');
+        expr = expr.replace(/\^/g, '**');
+
+        // Note: Math functions evaluate in Radians by default
+        // eslint-disable-next-line no-new-func
+        const res = new Function('return ' + expr)();
+        
+        if (Number.isFinite(res)) {
+            // Clean up overly long decimals
+            let cleanRes = parseFloat(res.toPrecision(10)).toString();
+            setCalcResult(cleanRes);
+        } else {
+            setCalcResult(res.toString());
+        }
+      } catch (err) {
+        setCalcResult('ERR: SYNTAX');
+      }
+    } else {
+      setCalcInput(prev => prev + val);
+    }
+  };
+
+  const calcButtons = [
+    'sin(', 'cos(', 'tan(', 'C',
+    'log(', 'ln(', 'sqrt(', 'DEL',
+    '(', ')', '^', '/',
+    '7', '8', '9', '*',
+    '4', '5', '6', '-',
+    '1', '2', '3', '+',
+    '0', '.', 'pi', '='
+  ];
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -134,7 +186,6 @@ export default function Dashboard({ onClose }) {
             COLUMN 1: YOUTUBE FEEDS
             ========================================= */}
         <div className="widget-column">
-          {/* Main Subscriptions Widget */}
           <div className="widget yt-widget">
             <h3>Main Subscriptions</h3>
             <div className="widget-content scrollable-content">
@@ -156,7 +207,6 @@ export default function Dashboard({ onClose }) {
             </div>
           </div>
 
-          {/* Ryan 3000 Widget (Stacked underneath) */}
           <div className="widget yt-widget">
             <h3>Ryan 3000 Feed</h3>
             <div className="widget-content scrollable-content" style={{ maxHeight: '200px' }}>
@@ -234,13 +284,30 @@ export default function Dashboard({ onClose }) {
         </div>
 
         {/* =========================================
-            COLUMN 3: EMPTY PLACEMENT
+            COLUMN 3: SCIENTIFIC CALCULATOR
             ========================================= */}
         <div className="widget-column">
-          <div className="widget empty-widget">
-            <h3>Available Module</h3>
-            <div className="widget-content">
-              <p>Awaiting assignment...</p>
+          <div className="widget calc-widget">
+            <h3>Scientific Terminal</h3>
+            <div className="widget-content calc-container">
+              
+              <div className="calc-screen">
+                <div className="calc-history">{calcInput || '> _'}</div>
+                <div className="calc-result">{calcResult || ''}</div>
+              </div>
+
+              <div className="calc-pad">
+                {calcButtons.map((btn, idx) => (
+                  <button 
+                    key={idx} 
+                    className={`calc-btn ${btn === '=' || btn === 'C' || btn === 'DEL' ? 'calc-btn-action' : ''}`}
+                    onClick={() => handleCalcClick(btn)}
+                  >
+                    {btn}
+                  </button>
+                ))}
+              </div>
+
             </div>
           </div>
         </div>
