@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
 
 // ==========================================
-// YOUTUBE CONFIGURATION (outside component)
+// YOUTUBE CONFIGURATION
 // ==========================================
 const ryanRSS = 'https://www.youtube.com/feeds/videos.xml?channel_id=UCjXPeBJ0L57q7548RtW99Fg';
 
@@ -33,7 +33,7 @@ const filterShorts = (items) => {
 };
 
 // ==========================================
-// WEATHER CONFIGURATION (outside component)
+// WEATHER CONFIGURATION
 // ==========================================
 const getWeatherDesc = (code) => {
   if (code <= 1) return 'Clear';
@@ -66,6 +66,10 @@ export default function Dashboard({ onClose }) {
   const [calcInput, setCalcInput] = useState('');
   const [calcResult, setCalcResult] = useState('');
   const [calcHistory, setCalcHistory] = useState('');
+
+  // Dog State
+  const [dogImg, setDogImg] = useState('');
+  const [dogLoading, setDogLoading] = useState(true);
 
   useEffect(() => {
     // --- 1. YOUTUBE FETCHING ---
@@ -123,9 +127,24 @@ export default function Dashboard({ onClose }) {
     };
 
     fetchWeather();
+
+    // --- 3. DOG API FETCHING ---
+    fetch('https://dog.ceo/api/breeds/image/random')
+      .then(res => res.json())
+      .then(data => {
+        if(data.status === "success") {
+          setDogImg(data.message);
+        }
+        setDogLoading(false);
+      })
+      .catch(err => {
+        console.error('Dog fetch error:', err);
+        setDogLoading(false);
+      });
+
   }, []);
 
-  // --- 3. CALCULATOR LOGIC ---
+  // --- 4. CALCULATOR LOGIC ---
   const handleCalcClick = (val) => {
     if (val === 'C') {
       setCalcHistory('');
@@ -168,14 +187,7 @@ export default function Dashboard({ onClose }) {
 
   // physical button groupings
   const scientificButtons = ['sin(', 'cos(', 'tan(', 'log(', 'ln(', 'sqrt(', '^', 'pi'];
-  const keypadButtons = [
-    '7', '8', '9', '/',
-    '4', '5', '6', '*',
-    '1', '2', '3', '-',
-    '0', '.', '(', ')'
-  ];
   const arithmeticOperators = ['/', '*', '-', '+'];
-  const actionButtons = ['C', 'DEL', '+', '=']; // special case for layout
   
   // merge all buttons in order for mapping
   const allButtons = [
@@ -308,9 +320,10 @@ export default function Dashboard({ onClose }) {
         </div>
 
         {/* =========================================
-            COLUMN 3: SCIENTIFIC CALCULATOR
+            COLUMN 3: SCIENTIFIC CALCULATOR & DOG
             ========================================= */}
         <div className="widget-column">
+          {/* Scientific Calculator */}
           <div className="widget calc-widget">
             <h3>Scientific Terminal</h3>
             <div className="widget-content calc-unit">
@@ -335,6 +348,21 @@ export default function Dashboard({ onClose }) {
 
             </div>
           </div>
+
+          {/* Biological Asset Widget */}
+          <div className="widget dog-widget">
+            <h3>Biological Asset Module</h3>
+            <div className="widget-content">
+              {dogLoading ? (
+                <p>Acquiring canine visual data...</p>
+              ) : dogImg ? (
+                <img src={dogImg} alt="Random Canine Companion" className="dog-img" />
+              ) : (
+                <p>Failed to load biological asset.</p>
+              )}
+            </div>
+          </div>
+
         </div>
 
       </div>
