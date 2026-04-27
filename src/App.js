@@ -24,16 +24,20 @@ function App() {
       const cmd = input.trim().toLowerCase();
       let output = '';
 
-      // --- 1. URL DETECTION ---
-      // This Regex checks if the user typed something that looks like a website (e.g., google.com)
-      const isUrl = /^((https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?)$/.test(cmd);
-      
-      if (isUrl) {
+      // --- 1. GOOGLE SEARCH DETECTION (-g flag) ---
+      if (cmd.endsWith('-g')) {
+        // Extract the search query by removing the '-g' and any extra spaces
+        const searchQuery = input.trim().slice(0, -2).trim(); 
+        output = `Initiating Google search for "${searchQuery}"...`;
+        window.location.href = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+      } 
+      // --- 2. URL DETECTION ---
+      else if (/^((https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?)$/.test(cmd)) {
         output = `Initiating hyperspace jump to ${cmd}...`;
         const targetUrl = cmd.startsWith('http') ? cmd : `https://${cmd}`;
-        window.location.href = targetUrl; // Redirects the current tab
+        window.location.href = targetUrl;
       } 
-      // --- 2. COMMAND & SHORTCUT PROCESSING ---
+      // --- 3. COMMAND & SHORTCUT PROCESSING ---
       else {
         switch (cmd) {
           // --- Custom Homepage Shortcuts ---
@@ -81,7 +85,8 @@ function App() {
   snake      - Launch Snake Game
   clear      - Clear the terminal
   
-  * Note: You can also type any valid URL (e.g. github.com) or use hidden shortcuts to navigate the web.`;
+  * Web Shortcuts: Type any valid URL (e.g. github.com) to navigate.
+  * Web Search: Type any phrase followed by -g to search Google.`;
             break;
           case 'about':
             output = 'Noah Jett\nA Junior studying Aerospace Engineering at Iowa State University, with a minor in Non-Destructive Evaluation. Seeking to apply a strong background in CAD modeling, etc...';
