@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
 
 // ==========================================
-// YOUTUBE CONFIGURATION
+// YOUTUBE CONFIGURATION (outside component)
 // ==========================================
 const ryanRSS = 'https://www.youtube.com/feeds/videos.xml?channel_id=UCjXPeBJ0L57q7548RtW99Fg';
 
@@ -33,7 +33,7 @@ const filterShorts = (items) => {
 };
 
 // ==========================================
-// WEATHER CONFIGURATION
+// WEATHER CONFIGURATION (outside component)
 // ==========================================
 const getWeatherDesc = (code) => {
   if (code <= 1) return 'Clear';
@@ -65,6 +65,7 @@ export default function Dashboard({ onClose }) {
   // Calculator States
   const [calcInput, setCalcInput] = useState('');
   const [calcResult, setCalcResult] = useState('');
+  const [calcHistory, setCalcHistory] = useState('');
 
   useEffect(() => {
     // --- 1. YOUTUBE FETCHING ---
@@ -127,6 +128,7 @@ export default function Dashboard({ onClose }) {
   // --- 3. CALCULATOR LOGIC ---
   const handleCalcClick = (val) => {
     if (val === 'C') {
+      setCalcHistory('');
       setCalcInput('');
       setCalcResult('');
     } else if (val === 'DEL') {
@@ -134,7 +136,7 @@ export default function Dashboard({ onClose }) {
     } else if (val === '=') {
       try {
         let expr = calcInput;
-        // Translate scientific notation to native JS Math engine
+        // Basic translation for math engine
         expr = expr.replace(/sin\(/g, 'Math.sin(');
         expr = expr.replace(/cos\(/g, 'Math.cos(');
         expr = expr.replace(/tan\(/g, 'Math.tan(');
@@ -144,13 +146,14 @@ export default function Dashboard({ onClose }) {
         expr = expr.replace(/pi/g, 'Math.PI');
         expr = expr.replace(/\^/g, '**');
 
-        // Note: Math functions evaluate in Radians by default
+        // Evaluate (safe evaluation function)
         // eslint-disable-next-line no-new-func
         const res = new Function('return ' + expr)();
         
         if (Number.isFinite(res)) {
-            // Clean up overly long decimals
             let cleanRes = parseFloat(res.toPrecision(10)).toString();
+            setCalcHistory(calcInput + '=');
+            setCalcInput(cleanRes);
             setCalcResult(cleanRes);
         } else {
             setCalcResult(res.toString());
@@ -163,15 +166,36 @@ export default function Dashboard({ onClose }) {
     }
   };
 
-  const calcButtons = [
-    'sin(', 'cos(', 'tan(', 'C',
-    'log(', 'ln(', 'sqrt(', 'DEL',
-    '(', ')', '^', '/',
-    '7', '8', '9', '*',
-    '4', '5', '6', '-',
-    '1', '2', '3', '+',
-    '0', '.', 'pi', '='
+  // physical button groupings
+  const scientificButtons = ['sin(', 'cos(', 'tan(', 'log(', 'ln(', 'sqrt(', '^', 'pi'];
+  const keypadButtons = [
+    '7', '8', '9', '/',
+    '4', '5', '6', '*',
+    '1', '2', '3', '-',
+    '0', '.', '(', ')'
   ];
+  const arithmeticOperators = ['/', '*', '-', '+'];
+  const actionButtons = ['C', 'DEL', '+', '=']; // special case for layout
+  
+  // merge all buttons in order for mapping
+  const allButtons = [
+      'sin(', 'cos(', 'tan(', 'sqrt(',
+      'log(', 'ln(', '^', 'pi',
+      '(', ')', 'C', 'DEL',
+      '7', '8', '9', '/',
+      '4', '5', '6', '*',
+      '1', '2', '3', '-',
+      '0', '.', '+', '='
+  ];
+
+  const getButtonClass = (btn) => {
+    if (btn === '=') return 'calc-btn-eq';
+    if (arithmeticOperators.includes(btn)) return 'calc-btn-op';
+    if (btn === 'C' || btn === 'DEL') return 'calc-btn-action';
+    if (scientificButtons.includes(btn) || btn === '(' || btn === ')') return 'calc-btn-sci';
+    if (!isNaN(parseInt(btn)) || btn === '.') return 'calc-btn-num';
+    return '';
+  };
 
   return (
     <div className="dashboard-container">
@@ -289,18 +313,19 @@ export default function Dashboard({ onClose }) {
         <div className="widget-column">
           <div className="widget calc-widget">
             <h3>Scientific Terminal</h3>
-            <div className="widget-content calc-container">
+            <div className="widget-content calc-unit">
               
               <div className="calc-screen">
-                <div className="calc-history">{calcInput || '> _'}</div>
-                <div className="calc-result">{calcResult || ''}</div>
+                <div className="calc-display-history">{calcHistory || 'SYS_OK: _'}</div>
+                <div className="calc-display-input">{calcInput || '0'}</div>
+                <div className="calc-display-result">{calcResult || ''}</div>
               </div>
 
-              <div className="calc-pad">
-                {calcButtons.map((btn, idx) => (
+              <div className="calc-keypad">
+                {allButtons.map((btn, idx) => (
                   <button 
                     key={idx} 
-                    className={`calc-btn ${btn === '=' || btn === 'C' || btn === 'DEL' ? 'calc-btn-action' : ''}`}
+                    className={`calc-btn ${getButtonClass(btn)}`}
                     onClick={() => handleCalcClick(btn)}
                   >
                     {btn}
