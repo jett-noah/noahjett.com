@@ -85,7 +85,23 @@
 
 /* --- YouTube Widget Specific Styles --- */
 .yt-content {
-  align-items: flex-start;
+  display: block; /* Overrides flex centering so lists scroll properly */
+  overflow-y: auto;
+  max-height: 250px; /* Keeps the widget from stretching forever */
+}
+
+/* Custom terminal-style scrollbar */
+.yt-content::-webkit-scrollbar {
+  width: 6px;
+}
+.yt-content::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+.yt-content::-webkit-scrollbar-thumb {
+  background: #333;
+}
+.yt-content::-webkit-scrollbar-thumb:hover {
+  background: #00ff00;
 }
 
 .video-list {
@@ -119,4 +135,9 @@
 .video-list a:hover {
   color: #fff;
   text-shadow: 0 0 5px #00ff00;
+}
+
+.channel-name {
+  color: #ff00ff; /* Purple to distinguish the channel name from the title */
+  font-weight: bold;
 }
