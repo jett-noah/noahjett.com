@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 import Snake from './Snake';
 import Aero from './Aero';
+import Dashboard from './Dashboard';
 
 function App() {
   const [history, setHistory] = useState([
@@ -10,6 +11,7 @@ function App() {
   const [input, setInput] = useState('');
   const [showSnakeGame, setShowSnakeGame] = useState(false);
   const [showAero, setShowAero] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
   const historyEndRef = useRef(null);
 
   // Auto-scroll to the bottom when new history is added
@@ -69,6 +71,10 @@ Programming: MATLAB, Python, Java, Git, GitLab, Agile/Scrum`;
           setShowAero(true);
           output = 'Launching Aerodynamics Engine...';
           break;
+        case 'overseer':
+          setShowDashboard(true);
+          output = 'Access granted. Initializing dashboard...';
+          break;
         case '':
           output = '';
           break;
@@ -87,6 +93,10 @@ Programming: MATLAB, Python, Java, Git, GitLab, Agile/Scrum`;
   
   if (showAero) {
     return <Aero onClose={() => setShowAero(false)} />;
+  }
+
+  if (showDashboard) {
+    return <Dashboard onClose={() => setShowDashboard(false)} />;
   }
 
   return (
