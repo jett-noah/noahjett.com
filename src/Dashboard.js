@@ -24,6 +24,15 @@ const fetchFeed = async (rssUrl) => {
   return data.items || [];
 };
 
+// Filter function to remove likely Shorts from the RSS feed
+const filterShorts = (items) => {
+  return items.filter(item => {
+    const title = (item.title || '').toLowerCase();
+    const desc = (item.description || '').toLowerCase();
+    return !title.includes('#short') && !desc.includes('#short');
+  });
+};
+
 // ==========================================
 // WEATHER CONFIGURATION
 // ==========================================
@@ -38,7 +47,6 @@ const getWeatherDesc = (code) => {
   if (code >= 95) return 'Thunderstorms';
   return 'Mixed';
 };
-
 
 // ==========================================
 // MAIN COMPONENT
@@ -59,7 +67,8 @@ export default function Dashboard({ onClose }) {
     // --- 1. YOUTUBE FETCHING ---
     fetchFeed(ryanRSS)
       .then(items => {
-        setRyanVideos(items.slice(0, 3));
+        const noShorts = filterShorts(items);
+        setRyanVideos(noShorts.slice(0, 3));
         setRyanLoading(false);
       })
       .catch(err => {
@@ -72,7 +81,8 @@ export default function Dashboard({ onClose }) {
       for (const channel of mainChannels) {
         try {
           const items = await fetchFeed(channel.url);
-          const mappedItems = items.map(item => ({ ...item, channelName: channel.name }));
+          const noShorts = filterShorts(items);
+          const mappedItems = noShorts.map(item => ({ ...item, channelName: channel.name }));
           allVideos = [...allVideos, ...mappedItems];
         } catch (err) {
           console.error(`Skipping ${channel.name} due to fetch error.`);
@@ -88,17 +98,14 @@ export default function Dashboard({ onClose }) {
     // --- 2. WEATHER FETCHING ---
     const fetchWeather = async () => {
       try {
-        // Coordinates for Ames, IA
         const lat = 42.0286;
         const lon = -93.6163;
 
-        // Fetch 10-Day Forecast & Current Conditions (Open-Meteo)
         const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=10`;
         const weatherRes = await fetch(weatherUrl);
         const weatherData = await weatherRes.json();
         setWeather(weatherData);
 
-        // Fetch Severe Weather Alerts (NWS)
         const alertsRes = await fetch(`https://api.weather.gov/alerts/active?point=${lat},${lon}`);
         const alertsData = await alertsRes.json();
         if (alertsData.features) {
@@ -123,104 +130,118 @@ export default function Dashboard({ onClose }) {
       
       <div className="widget-grid">
         
-        {/* Ryan 3000 Widget */}
-        <div className="widget yt-widget">
-          <h3>Ryan 3000 Feed</h3>
-          <div className="widget-content scrollable-content">
-            {ryanLoading ? (
-              <p>Fetching Ryan 3000...</p>
-            ) : ryanVideos.length > 0 ? (
-              <ul className="video-list">
-                {ryanVideos.map((video, index) => (
-                  <li key={index}>
-                    <a href={video.link} target="_blank" rel="noopener noreferrer">
-                      &gt; {video.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No videos found.</p>
-            )}
+        {/* =========================================
+            COLUMN 1: YOUTUBE FEEDS
+            ========================================= */}
+        <div className="widget-column">
+          {/* Main Subscriptions Widget */}
+          <div className="widget yt-widget">
+            <h3>Main Subscriptions</h3>
+            <div className="widget-content scrollable-content">
+              {mainLoading ? (
+                <p>Synchronizing feeds... (This takes a few seconds)</p>
+              ) : mainVideos.length > 0 ? (
+                <ul className="video-list">
+                  {mainVideos.map((video, index) => (
+                    <li key={index}>
+                      <a href={video.link} target="_blank" rel="noopener noreferrer">
+                        &gt; <span className="channel-name">{video.channelName}</span>: {video.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No videos found.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Ryan 3000 Widget (Stacked underneath) */}
+          <div className="widget yt-widget">
+            <h3>Ryan 3000 Feed</h3>
+            <div className="widget-content scrollable-content" style={{ maxHeight: '200px' }}>
+              {ryanLoading ? (
+                <p>Fetching Ryan 3000...</p>
+              ) : ryanVideos.length > 0 ? (
+                <ul className="video-list">
+                  {ryanVideos.map((video, index) => (
+                    <li key={index}>
+                      <a href={video.link} target="_blank" rel="noopener noreferrer">
+                        &gt; {video.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No videos found.</p>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Main Subscriptions Widget */}
-        <div className="widget yt-widget">
-          <h3>Main Subscriptions</h3>
-          <div className="widget-content scrollable-content">
-            {mainLoading ? (
-              <p>Synchronizing feeds... (This takes a few seconds)</p>
-            ) : mainVideos.length > 0 ? (
-              <ul className="video-list">
-                {mainVideos.map((video, index) => (
-                  <li key={index}>
-                    <a href={video.link} target="_blank" rel="noopener noreferrer">
-                      &gt; <span className="channel-name">{video.channelName}</span>: {video.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No videos found.</p>
-            )}
-          </div>
-        </div>
-        
-        {/* Weather Widget */}
-        <div className="widget weather-widget">
-          <h3>Local Weather (Ames, IA)</h3>
-          <div className="widget-content scrollable-content">
-            {weatherLoading ? (
-              <p>Acquiring meteorological data...</p>
-            ) : weather ? (
-              <div className="weather-data">
-                
-                {/* Emergency Alerts Section */}
-                {alerts.length > 0 && (
-                  <div className="weather-alerts">
-                    {alerts.map((alert, i) => (
-                      <div key={i} className="alert-item">
-                        <strong>[WARNING]:</strong> {alert.event}
-                      </div>
-                    ))}
+        {/* =========================================
+            COLUMN 2: LOCAL WEATHER
+            ========================================= */}
+        <div className="widget-column">
+          <div className="widget weather-widget">
+            <h3>Local Weather (Ames, IA)</h3>
+            <div className="widget-content scrollable-content" style={{ maxHeight: '600px' }}>
+              {weatherLoading ? (
+                <p>Acquiring meteorological data...</p>
+              ) : weather ? (
+                <div className="weather-data">
+                  
+                  {alerts.length > 0 && (
+                    <div className="weather-alerts">
+                      {alerts.map((alert, i) => (
+                        <div key={i} className="alert-item">
+                          <strong>[WARNING]:</strong> {alert.event}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  <div className="current-weather">
+                    <h4>&gt; CURRENT CONDITIONS</h4>
+                    <p><strong>Temp:</strong> {weather.current.temperature_2m}°F (Feels like {weather.current.apparent_temperature}°F)</p>
+                    <p><strong>Status:</strong> {getWeatherDesc(weather.current.weather_code)}</p>
+                    <p><strong>Humidity:</strong> {weather.current.relative_humidity_2m}% | <strong>Wind:</strong> {weather.current.wind_speed_10m} mph</p>
                   </div>
-                )}
-                
-                {/* Current Conditions Section */}
-                <div className="current-weather">
-                  <h4>&gt; CURRENT CONDITIONS</h4>
-                  <p><strong>Temp:</strong> {weather.current.temperature_2m}°F (Feels like {weather.current.apparent_temperature}°F)</p>
-                  <p><strong>Status:</strong> {getWeatherDesc(weather.current.weather_code)}</p>
-                  <p><strong>Humidity:</strong> {weather.current.relative_humidity_2m}% | <strong>Wind:</strong> {weather.current.wind_speed_10m} mph</p>
-                </div>
 
-                {/* 10-Day Forecast Section */}
-                <div className="forecast-weather">
-                  <h4>&gt; 10-DAY FORECAST</h4>
-                  <ul className="forecast-list">
-                    {weather.daily.time.map((date, index) => {
-                      // Skip today since we already show current conditions
-                      if (index === 0) return null;
-                      
-                      // Format the date string cleanly
-                      const dayDate = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                      
-                      return (
-                        <li key={index}>
-                          <span className="forecast-date">{dayDate}</span>
-                          <span className="forecast-desc">{getWeatherDesc(weather.daily.weather_code[index])}</span>
-                          <span className="forecast-temps">{Math.round(weather.daily.temperature_2m_max[index])}° / {Math.round(weather.daily.temperature_2m_min[index])}°</span>
-                          <span className="forecast-precip">💧 {weather.daily.precipitation_probability_max[index]}%</span>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                  <div className="forecast-weather">
+                    <h4>&gt; 10-DAY FORECAST</h4>
+                    <ul className="forecast-list">
+                      {weather.daily.time.map((date, index) => {
+                        if (index === 0) return null;
+                        const dayDate = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                        return (
+                          <li key={index}>
+                            <span className="forecast-date">{dayDate}</span>
+                            <span className="forecast-desc">{getWeatherDesc(weather.daily.weather_code[index])}</span>
+                            <span className="forecast-temps">{Math.round(weather.daily.temperature_2m_max[index])}° / {Math.round(weather.daily.temperature_2m_min[index])}°</span>
+                            <span className="forecast-precip">💧 {weather.daily.precipitation_probability_max[index]}%</span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <p>Failed to load weather data.</p>
-            )}
+              ) : (
+                <p>Failed to load weather data.</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* =========================================
+            COLUMN 3: EMPTY PLACEMENT
+            ========================================= */}
+        <div className="widget-column">
+          <div className="widget empty-widget">
+            <h3>Available Module</h3>
+            <div className="widget-content">
+              <p>Awaiting assignment...</p>
+            </div>
           </div>
         </div>
 
