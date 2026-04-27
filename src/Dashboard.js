@@ -1,39 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
 
+// ==========================================
+// MOVED OUTSIDE THE COMPONENT TO PREVENT 
+// GITHUB ACTIONS FROM CRASHING (EXIT CODE 1)
+// ==========================================
+
+const ryanRSS = 'https://www.youtube.com/feeds/videos.xml?channel_id=UCjXPeBJ0L57q7548RtW99Fg';
+
+const mainChannels = [
+  { name: 'CorridorCrew', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCSpFnDQr88xCZ80N-X7t0nQ' },
+  { name: 'DailyDose', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCdC0An4ZPNr_YiFiYoVbwaw' },
+  { name: 'TPMvids', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCMddDi4iCT8Rz8L0JL-bH7Q' },
+  { name: 'MiaMaples', url: 'https://www.youtube.com/feeds/videos.xml?user=MiaMaples' },
+  { name: 'Nintendo', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCGIY_O-8vW4rfX98KlMkvRg' },
+  { name: 'TimTracker', url: 'https://www.youtube.com/feeds/videos.xml?user=TheTimTracker' },
+  { name: 'MKBHD', url: 'https://www.youtube.com/feeds/videos.xml?user=marquesbrownlee' },
+  { name: 'Ryan', url: 'https://www.youtube.com/feeds/videos.xml?user=ryantrahan' }
+];
+
+const fetchFeed = async (rssUrl) => {
+  const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+  const response = await fetch(apiUrl);
+  const data = await response.json();
+  return data.items || [];
+};
+
+// ==========================================
+// MAIN COMPONENT
+// ==========================================
+
 export default function Dashboard({ onClose }) {
   const [ryanVideos, setRyanVideos] = useState([]);
   const [mainVideos, setMainVideos] = useState([]);
   const [ryanLoading, setRyanLoading] = useState(true);
   const [mainLoading, setMainLoading] = useState(true);
 
-  // Ryan 3000 Channel ID (UCjXPeBJ0L57q7548RtW99Fg)
-  const ryanRSS = 'https://www.youtube.com/feeds/videos.xml?channel_id=UCjXPeBJ0L57q7548RtW99Fg';
-  
-  // Array of your requested channels
-  const mainChannels = [
-    { name: 'CorridorCrew', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCSpFnDQr88xCZ80N-X7t0nQ' },
-    { name: 'DailyDose', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCdC0An4ZPNr_YiFiYoVbwaw' },
-    { name: 'TPMvids', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCMddDi4iCT8Rz8L0JL-bH7Q' },
-    { name: 'MiaMaples', url: 'https://www.youtube.com/feeds/videos.xml?user=MiaMaples' },
-    { name: 'Nintendo', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCGIY_O-8vW4rfX98KlMkvRg' },
-    { name: 'TimTracker', url: 'https://www.youtube.com/feeds/videos.xml?user=TheTimTracker' },
-    { name: 'MKBHD', url: 'https://www.youtube.com/feeds/videos.xml?user=marquesbrownlee' },
-    { name: 'Ryan', url: 'https://www.youtube.com/feeds/videos.xml?user=ryantrahan' }
-  ];
-
-  const fetchFeed = async (rssUrl) => {
-    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-    const response = await fetch(apiUrl);
-    const data = await response.json();
-    return data.items || [];
-  };
-
   useEffect(() => {
     // 1. Fetch Ryan 3000
     fetchFeed(ryanRSS)
       .then(items => {
-        setRyanVideos(items.slice(0, 3)); // Show top 3 for Ryan 3000
+        setRyanVideos(items.slice(0, 3));
         setRyanLoading(false);
       })
       .catch(err => {
@@ -41,8 +48,7 @@ export default function Dashboard({ onClose }) {
         setRyanLoading(false);
       });
 
-    // 2. Fetch Main Channels Sequentially 
-    // (We do this one-by-one so the free API doesn't block us for sending 8 requests at the exact same millisecond)
+    // 2. Fetch Main Channels Sequentially
     const fetchMainFeeds = async () => {
       let allVideos = [];
       for (const channel of mainChannels) {
@@ -64,7 +70,6 @@ export default function Dashboard({ onClose }) {
     };
 
     fetchMainFeeds();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
