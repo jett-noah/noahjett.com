@@ -44,10 +44,18 @@
 
 .widget-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 20px;
   flex: 1;
   overflow-y: auto;
+  align-items: start; /* Prevents columns from stretching to match the tallest one */
+}
+
+/* New column container to stack widgets vertically within a grid slot */
+.widget-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .widget {
@@ -85,9 +93,9 @@
 
 /* --- Shared Scrolling Styles for Widgets --- */
 .scrollable-content {
-  display: block; /* Overrides flex centering so lists scroll properly */
+  display: block; 
   overflow-y: auto;
-  max-height: 400px; /* Keeps widgets uniformly sized */
+  max-height: 350px; 
 }
 
 .scrollable-content::-webkit-scrollbar {
