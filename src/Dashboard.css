@@ -48,10 +48,9 @@
   gap: 20px;
   flex: 1;
   overflow-y: auto;
-  align-items: start; /* Prevents columns from stretching to match the tallest one */
+  align-items: start; 
 }
 
-/* New column container to stack widgets vertically within a grid slot */
 .widget-column {
   display: flex;
   flex-direction: column;
@@ -91,7 +90,7 @@
   text-align: center;
 }
 
-/* --- Shared Scrolling Styles for Widgets --- */
+/* --- Shared Scrolling Styles --- */
 .scrollable-content {
   display: block; 
   overflow-y: auto;
@@ -111,7 +110,7 @@
   background: #00ff00;
 }
 
-/* --- YouTube Specific Styles --- */
+/* --- YouTube Styles --- */
 .video-list {
   list-style-type: none;
   padding: 0;
@@ -150,7 +149,7 @@
   font-weight: bold;
 }
 
-/* --- Weather Specific Styles --- */
+/* --- Weather Styles --- */
 .weather-data h4 {
   color: #ff00ff;
   margin: 10px 0 5px 0;
@@ -206,3 +205,165 @@
 .forecast-desc { width: 35%; color: #aaa; text-align: left; }
 .forecast-temps { width: 20%; text-align: right; }
 .forecast-precip { width: 15%; text-align: right; color: #00ccff; }
+
+
+/* ==========================================
+   SCIENTIFIC CALCULATOR HARDWARE STYLES
+   Inspired by Reference Imgs & Neon Hacker Aesthetic
+   ========================================== */
+
+.calc-unit {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 10px;
+  background-color: #050505; /* physical case color */
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* --- Display Screen (mimics ref image_0ec09d.png LED style) --- */
+.calc-screen {
+  background-color: #000;
+  border: 2px solid #00ff00;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 3px;
+  text-align: right;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.5); /* Inner neon glow */
+  overflow: hidden;
+}
+
+/* Two-line history style from ref image_0eb9f5.png */
+.calc-display-history {
+  color: #666; /* dimmed history text */
+  font-size: 13px;
+  font-family: 'Courier New', Courier, monospace;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.calc-display-input {
+  color: #00ff00;
+  font-size: 26px;
+  font-family: 'Courier New', Courier, monospace;
+  word-wrap: break-word;
+  word-break: break-all;
+  text-shadow: 0 0 8px #00ff00;
+  line-height: 1.2;
+}
+
+.calc-display-result {
+  display: none; /* Logic is handled within calc-display-input now */
+}
+
+
+/* --- Keypad (Physical Grid) --- */
+.calc-keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px; /* tight packing like real hardware */
+}
+
+/* --- Base Button (Physical Key Style) --- */
+.calc-btn {
+  background-color: #111; /* dark physical key */
+  color: #888; /* default dimmed text */
+  border: 1px solid #333;
+  padding: 14px 5px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 3px;
+  position: relative; /* for glow effects */
+  box-sizing: border-box;
+  transition: all 0.1s;
+  
+  /* subtle gradient for physical dimension */
+  background-image: linear-gradient(145deg, #181818, #0f0f0f);
+  box-shadow: 2px 2px 5px #050505;
+}
+
+/* physical click effect */
+.calc-btn:active {
+  background-image: linear-gradient(145deg, #0f0f0f, #181818);
+  transform: translateY(1px);
+  box-shadow: 1px 1px 2px #050505;
+}
+
+
+/* --- Functional Groups (Colors inspired by user aesthetic) --- */
+
+/* Standard Numbers and . (bright green text) */
+.calc-btn-num {
+  color: #00ff00;
+  text-shadow: 0 0 3px #00ff00;
+  font-size: 16px;
+}
+
+.calc-btn-num:hover {
+  border-color: #00ff00;
+  box-shadow: 0 0 5px #00ff00;
+}
+
+
+/* Scientific keys and () (dimmed text from references, green on user site) */
+.calc-btn-sci {
+  color: #aaaaaa;
+  font-size: 13px; /* smaller functional keys like in ref image_0eb9f5.png */
+}
+
+.calc-btn-sci:hover {
+  border-color: #aaaaaa;
+  color: #fff;
+}
+
+
+/* Basic Arithmetic Operators (use the purple aesthetic) */
+.calc-btn-op {
+  color: #ff00ff;
+  font-size: 16px;
+}
+
+.calc-btn-op:hover {
+  border-color: #ff00ff;
+  box-shadow: 0 0 5px #ff00ff;
+}
+
+
+/* Action keys (C, DEL - distinct color, use purple) */
+.calc-btn-action {
+  background-image: linear-gradient(145deg, rgba(30, 0, 30, 0.4), rgba(15, 0, 15, 0.4));
+  color: #ff00ff;
+  border-color: #ff00ff;
+}
+
+.calc-btn-action:hover {
+  background-image: linear-gradient(145deg, rgba(60, 0, 60, 0.4), rgba(30, 0, 30, 0.4));
+  box-shadow: 0 0 5px #ff00ff;
+}
+
+
+/* The prominent Equals Key (mimics physical style from image_0ec09d.png) */
+.calc-btn-eq {
+  color: #00ff00;
+  font-size: 20px;
+  font-weight: bold;
+  
+  /* reverse lighting/case like prominent buttons */
+  background-color: #00ff00;
+  color: #000;
+  background-image: linear-gradient(145deg, rgba(0, 255, 0, 0.7), rgba(0, 150, 0, 0.7));
+  border-color: #00ff00;
+}
+
+.calc-btn-eq:hover {
+  background-image: linear-gradient(145deg, rgba(100, 255, 100, 0.7), rgba(0, 255, 0, 0.7));
+  box-shadow: 0 0 10px #00ff00;
+}
