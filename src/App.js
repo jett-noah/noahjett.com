@@ -32,7 +32,7 @@ function App() {
         window.location.href = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
       } 
       // --- 2. URL DETECTION ---
-      else if (/^((https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?)$/.test(cmd)) {
+      else if (/^((https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\n\s]*)?)$/.test(cmd)) {
         output = `Initiating hyperspace jump to ${cmd}...`;
         const targetUrl = cmd.startsWith('http') ? cmd : `https://${cmd}`;
         window.location.href = targetUrl;
@@ -89,28 +89,16 @@ function App() {
   * Web Search: Type any phrase followed by -g to search Google.`;
             break;
           case 'about':
-            output = 'Noah Jett\nA Junior studying Aerospace Engineering at Iowa State University, with a minor in Non-Destructive Evaluation. Seeking to apply a strong background in CAD modeling, etc...';
+            output = `Noah Jett — Software Engineer & Aerospace Student\n\nObjective: Eager to rejoin State Farm’s collaborative problem-solving culture. Combining Aerospace Engineering rigor and experience with AI-accelerated workflows to rapidly engineer quality front-end/iOS platforms. Bringing three prior State Farm internships and a proven track record of innovation, including a patent‑pending iOS application.\n\nContact: noahjett@noahjett.com • linkedin.com/in/noahjett • github.com/jett-noah`;
             break;
           case 'education':
-            output = `[Iowa State University] - Ames, IA
-  B.S. Aerospace Engineering | Minor: Non-Destructive Evaluation
-  Expected: May 2027 | GPA: 3.98/4.0
-
-[Heartland Community College] - Normal, IL
-  A.S. Computer Science Focus
-  Graduated: May 2023 | GPA: 3.86/4.0`;
+            output = `Iowa State University — Ames, IA\nBachelor of Science in Aerospace Engineering | Minor: Non-Destructive Evaluation\nExpected Graduation: December 2027 | GPA: 3.87/4.0\n\nHeartland Community College — Normal, IL\nAssociate of Science, Computer Science (ADP with State Farm Mentor)\nGraduation: May 2023 | GPA: 3.86/4.0`;
             break;
           case 'experience':
-            output = `[Software Engineering Intern] - State Farm (Summers 2023, 2024, 2025)
-  - Operated within a 16-person Agile/Scrum team to engineer and deploy 5+ major feature updates.
-  - Engineered a novel, patent-pending iOS application for an internal coding competition.
-
-[Undergraduate Teaching Assistant] - Iowa State University (Fall 2024 - Fall 2025)
-  - Clarified complex engineering principles in Engineering Statics for 30+ students.`;
+            output = `Software Engineering Intern — State Farm (Summers 2023, 2024, 2025)\n- Engineered responsive, cross-device interfaces for the Digital Auto Quote and Purchase UI team; refactored Angular (TypeScript/HTML) components to match UX mockups and resolve production issues.\n- Led a team of interns in collaboration with JFrog engineering to architect and build a React-based internal portal for sharing innersource tools.\n- Worked within an Agile team, managed tasks via GitLab, and presented progress to stakeholders and executives bi-weekly.\n\nAerospace Avionics Systems Engineering Co-op — Collins Aerospace (June–Dec 2026)\n- Conceptualized a Python GUI utility (pandas, PyQt6) and rapidly prototyped the architecture; led beta testing and onboarding which reduced manual sorting time by ~70%.\n\nUndergraduate Teaching Assistant — Engineering Statics, Iowa State University (Fall 2024 – Fall 2025)\n- Led weekly review sessions for 30+ students, prepared lesson plans, and graded assignments to reinforce core statics concepts.`;
             break;
           case 'skills':
-            output = `CAD & NDE: SolidWorks, XFLR5, Liquid Penetrant (LPI), Magnetic Particle (MPI), Ultrasound (UT)
-Programming: MATLAB, Python, Java, Git, GitLab, Agile/Scrum`;
+            output = `Front-end: SwiftUI, JavaScript, Angular, React, HTML\nBack-end: Python, Java, C, Agentic AI scripting\nOther: Git, Agile/Scrum, MATLAB, SolidWorks`;
             break;
           case 'clear':
             setHistory([]);
